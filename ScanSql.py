@@ -6,18 +6,10 @@ import urllib.parse as urlparse
 import queue
 webSiteSet = set()
 fuck_set = set()
-class WebSite():
-    #一个WebSite应该有的属性 
-    def __init__(self,name,url):
-        self.name = name
-        self.url = url
-        self.dic = {} #key->路径 value->参数
-    def put_link(self,url):
-        self.set.add(url)
 class BigFuck():
     def __init__(self,url):
         self.url = url
-        self.friend_url = []
+        self.friend_url = set()
         self.payload_url = set()
         self.attach_url = queue.Queue()
         self.testSet = set()
@@ -27,16 +19,18 @@ class BigFuck():
         #print(req.text)
         pattern = re.compile('href="(.*?)"')
         for i in re.findall(pattern,req.text):
-            if i.find('http')!=-1:#有http->友情链接
+            has_http = i.find('http')!=-1
+            has_flag = i.find('=')!=-1
+            if has_http:#有http->友情链接
+                #print('------------------------')
                 #webSiteSet.add(i)
-                #print('友情链接',i) 
-                #----------------------------------------------------------------------------#
-                #友情链接还得处理 ->urlprase 看里面是否有注入点 如果有，去重扫描，并将域名丢到友情链接中等待扫描
-                #----------------------------------------------------------------------------#
-                self.friend_url.append(i)
-            elif i.find('=')!=-1: #无参数
+                self.friend_url.add(i)
+            if has_flag: #有参数的链接
+                if(has_http):
+                    self.format(i)
 #                    i = self.url+i #带参数的链接
-                self.format('http:'+self.url+i)
+                else:
+                    self.format(self.url+i)
                     #print('带参数的链接'+self.url+i)
             else:
                 #print('没用的url',i) #不带参数，无http关键词的链接
@@ -46,9 +40,15 @@ class BigFuck():
             #href不带http->有参数(=)->可能是payload，丢进去去重
             #href不带http->且无参数->无用url 直接丢弃
         for i in self.friend_url:
-            print('友链',i)
+            print('友情链接',i)            
         for i in self.testSet:
             print('可能存在payload的：',i)
+
+        #for i in self.friend_url:
+            #self.url=i
+            #self.get_things()
+        print('----------over-------------')
+
     def parse_url(): #这是一个即将失效的方法
             fuck_set = set()
             url = ['http://www.hnfnu.edu.cn/NewsList.aspx?bbid=110&nid=10829','http://www.hnfnu.edu.cn/NewsList.aspx?bbid=111&nid=10835']
@@ -77,14 +77,16 @@ class BigFuck():
         for i in temp[2]:
             str = str+i+'&'
             if temp[0]+'?'+str in self.payload_url:
-                print(url,'是一个重复的url')
+                #print(url,'是一个重复的url')
                 pass
             else: #不重复 特征值入set，url入set
                 self.payload_url.add(temp[0]+'?'+str)
                 self.testSet.add(url)
         #print(temp[0]+'?'+str)
         #return temp
-a = BigFuck('http://www.hnfnu.edu.cn/')
+a = BigFuck('http://news.xtu.edu.cn/')
 a.get_things()
 #parse_url('www.baidu.com/hello/fuck?a=2&h=000')
 #print(__wooyun('www.baidu.com/hello/fuck?a=2&h=000'))
+
+
