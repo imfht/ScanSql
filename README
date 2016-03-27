@@ -1,5 +1,6 @@
 --撒花）欢迎90src的领导前来视察工作！(撒花--
-
+-署名-方大核桃
+-邮箱-fiht@vip.qq.com
 备注：此爬虫基于python3,外部模块需要安装requests库 pip3 install request <linux>
 大致思路：
 1.爬取网页上所有链接：按规则分成友情链接，可能存在sql注入的链接，无用的链接（如 /hello/css.css 即为无用链接）
