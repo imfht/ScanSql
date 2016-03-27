@@ -23,43 +23,43 @@ class BigFuck():
         self.attach_url = queue.Queue()
         self.testSet = set()
     def get_things(self):
-        req = requests.get(self.url,timeout=3)
-        print('连接到网站 正在分析中...')
-        #soup = BeautifulSoup(req.text,'lxml')
-        #print(req.text)
-        pattern = re.compile('href="(.*?)"')
-        for i in re.findall(pattern,req.text):
-            has_http = i.find('http')!=-1
-            has_flag = i.find('=')!=-1
-            
-            if has_flag: #有参数的链接
-                if(has_http):
-                    self.my_format(i)
-#                    i = self.url+i #带参数的链接
+        try:
+            req = requests.get(self.url,timeout=3)
+            print('连接到网站 正在分析中...')
+            #soup = BeautifulSoup(req.text,'lxml')
+            #print(req.text)
+            pattern = re.compile('href="(.*?)"')
+            for i in re.findall(pattern,req.text):
+                has_http = i.find('http')!=-1
+                has_flag = i.find('=')!=-1
+                
+                if has_flag: #有参数的链接
+                    if(has_http):
+                        self.my_format(i)
+    #                    i = self.url+i #带参数的链接
+                    else:
+                        self.my_format(self.url+i)
+                        #print('带参数的链接'+self.url+i)
+                if has_http:#有http->友情链接
+                    self.http_format(i)
+                    #self.friend_url.add(i)
                 else:
-                    self.my_format(self.url+i)
-                    #print('带参数的链接'+self.url+i)
-            if has_http:#有http->友情链接
-                self.http_format(i)
-                #self.friend_url.add(i)
-            else:
-                #print('没用的url',i) #不带参数，无http关键词的链接
-                pass
-            #逻辑：href带http->友链
-            #href不带http->有参数(=)->可能是payload，丢进去去重
-            #href不带http->且无参数->无用url 直接丢弃
-        #for i in self.friend_url:
-        #    print('友情链接',i)
-        #for i in self.testSet: #for format
-            #print('可能存在payload的：',i)
-        for i in http_dic:
-            print('友情链接 ',http_dic[i])
-        for i in dic:
-            print('可能存在payload: ',dic[i])
-        #for i in self.friend_url:
-            #self.url=i
-            #self.get_things()
-        print('----------over-------------')
+                    #print('没用的url',i) #不带参数，无http关键词的链接
+                    pass
+                #逻辑：href带http->友链
+                #href不带http->有参数(=)->可能是payload，丢进去去重
+                #href不带http->且无参数->无用url 直接丢弃
+            #for i in self.friend_url:
+            #    print('友情链接',i)
+            #for i in self.testSet: #for format
+                #print('可能存在payload的：',i)
+            
+            #for i in self.friend_url:
+                #self.url=i
+                #self.get_things()
+            print('----------over-------------')
+        except Exception:
+            print('连接到指定网站失败')
     def http_format(self,url):
         #print(url,'---->')
         """用来格式化http链接的util类"""
@@ -117,12 +117,17 @@ class BigFuck():
         else:
             dic[Attack_url.www_path] = url
         #print(dic)
-a = BigFuck('http://121.199.41.68/')
+"""下面BigFuck的参数即为扫描目标，可自由制定，别忘了加http哦!"""
+a = BigFuck('http://www.sdu.edu.cn')
+"""上面BigFuck的参数即为扫描目标，可自由制定，别忘了加http哦!"""
 a.get_things()
-#for i in http_dic:
-    #a = BigFuck(http_dic[i])
-    #a.get_things()
+http_dic_clone = http_dic.copy()
+for i in http_dic_clone:
+    a = BigFuck(http_dic[i])
+    a.get_things()
 
+for i in dic:
+    print('可能存在payload的链接: ',dic[i])
 #parse_url('www.baidu.com/hello/fuck?a=2&h=000')
 #print(__wooyun('www.baidu.com/hello/fuck?a=2&h=000'))
 
