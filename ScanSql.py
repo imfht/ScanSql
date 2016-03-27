@@ -4,6 +4,7 @@ import requests
 from urllib import parse
 import urllib.parse as urlparse
 import queue
+import sys
 webSiteSet = set()
 fuck_set = set()
 dic = {}
@@ -25,7 +26,7 @@ class BigFuck():
     def get_things(self):
         try:
             req = requests.get(self.url,timeout=3)
-            print('连接到网站 正在分析中...')
+            #print('连接到网站 正在分析中...')
             #soup = BeautifulSoup(req.text,'lxml')
             #print(req.text)
             pattern = re.compile('href="(.*?)"')
@@ -57,9 +58,10 @@ class BigFuck():
             #for i in self.friend_url:
                 #self.url=i
                 #self.get_things()
-            print('----------over-------------')
+            #print('----------over-------------')
         except Exception:
-            print('连接到指定网站失败')
+            #print('连接到指定网站失败')
+            pass
     def http_format(self,url):
         #print(url,'---->')
         """用来格式化http链接的util类"""
@@ -118,16 +120,21 @@ class BigFuck():
             dic[Attack_url.www_path] = url
         #print(dic)
 """下面BigFuck的参数即为扫描目标，可自由制定，别忘了加http哦!"""
-a = BigFuck('http://www.sdu.edu.cn')
+if len(sys.argv)>1:
+    a = BigFuck(sys.argv[1])
+    print('Scaning ',a.url)
+else:
+    a = BigFuck('http://www.sdu.edu.cn')
 """上面BigFuck的参数即为扫描目标，可自由制定，别忘了加http哦!"""
 a.get_things()
 http_dic_clone = http_dic.copy()
 for i in http_dic_clone:
     a = BigFuck(http_dic[i])
     a.get_things()
-
+#for i in http_dic:
+#    print('友情链接：',http_dic[i])
 for i in dic:
-    print('可能存在payload的链接: ',dic[i])
+    print(dic[i])
 #parse_url('www.baidu.com/hello/fuck?a=2&h=000')
 #print(__wooyun('www.baidu.com/hello/fuck?a=2&h=000'))
 
