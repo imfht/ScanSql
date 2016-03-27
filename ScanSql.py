@@ -7,6 +7,7 @@ import queue
 webSiteSet = set()
 fuck_set = set()
 dic = {}
+http_dic = {}
 class attack_url():
     def __init__(self,www_path,param):
         self.www_path = www_path.lower()
@@ -39,33 +40,35 @@ class BigFuck():
                     self.my_format(self.url+i)
                     #print('带参数的链接'+self.url+i)
             if has_http:#有http->友情链接
-                #print('------------------------')
-                #webSiteSet.add(i)
-                #if self.friend_url:
-                    #self.friend_url.add(i)
-                #for URL in self.friend_url:
-                #if parse.urlparse(i)[1] == parse.urlparse(self.url)[1]:
-                    #print('找到一个可能重复的xxxx')
-                    #continue
-                #else:
-                self.friend_url.add(i)
+                self.http_format(i)
+                #self.friend_url.add(i)
             else:
                 #print('没用的url',i) #不带参数，无http关键词的链接
                 pass
             #逻辑：href带http->友链
             #href不带http->有参数(=)->可能是payload，丢进去去重
             #href不带http->且无参数->无用url 直接丢弃
-        for i in self.friend_url:
-            print('友情链接',i)            
+        #for i in self.friend_url:
+        #    print('友情链接',i)
         #for i in self.testSet: #for format
             #print('可能存在payload的：',i)
+        for i in http_dic:
+            print('友情链接 ',http_dic[i])
         for i in dic:
-            print(dic[i])
+            print('可能存在payload: ',dic[i])
         #for i in self.friend_url:
             #self.url=i
             #self.get_things()
         print('----------over-------------')
-
+    def http_format(self,url):
+        #print(url,'---->')
+        """用来格式化http链接的util类"""
+        www_path = url[0:url.rfind('/')]
+        if www_path not in http_dic:
+            http_dic[www_path] = url
+        else:
+            pass
+            #print('找到一个重复的url',url)
     def parse_url(): #这是一个即将失效的方法
             fuck_set = set()
             url = ['http://www.hnfnu.edu.cn/NewsList.aspx?bbid=110&nid=10829','http://www.hnfnu.edu.cn/NewsList.aspx?bbid=111&nid=10835']
@@ -114,8 +117,11 @@ class BigFuck():
         else:
             dic[Attack_url.www_path] = url
         #print(dic)
-a = BigFuck('http://zs.sdust.edu.cn/')
+a = BigFuck('http://121.199.41.68/')
 a.get_things()
+#for i in http_dic:
+    #a = BigFuck(http_dic[i])
+    #a.get_things()
 
 #parse_url('www.baidu.com/hello/fuck?a=2&h=000')
 #print(__wooyun('www.baidu.com/hello/fuck?a=2&h=000'))
