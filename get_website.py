@@ -17,4 +17,4 @@ def Fuck_main(keyWord): # this is the fuck main
         for j in soup.findAll(class_='pr10 fz14'):#print(i.getText()) #打印名字
             print(Fuck_Href(j['href']),j.text)
         req = requests.get("http://search.top.chinaz.com/Search.aspx?p=%d&url="%i+str(keyWord))
-Fuck_main("教育")
+Fuck_main("大学")
