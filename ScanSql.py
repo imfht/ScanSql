@@ -1,5 +1,4 @@
 import re
-from bs4 import BeautifulSoup
 import requests
 from urllib import parse
 import urllib.parse as urlparse
@@ -134,7 +133,8 @@ for i in http_dic_clone:
 #for i in http_dic:
 #    print('友情链接：',http_dic[i])
 for i in dic:
-    print(dic[i])
+    if(dic[i].find('youku')==-1&dic[i].find('filename')==-1):
+        print(dic[i])
 #parse_url('www.baidu.com/hello/fuck?a=2&h=000')
 #print(__wooyun('www.baidu.com/hello/fuck?a=2&h=000'))
 
