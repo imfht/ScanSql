@@ -8,7 +8,7 @@ if __name__=='__main__':
     data = requests.get('http://localhost:8775/task/new').json()
     if data['success']:
         taskID = data['taskid']
-        r = requests.post('http://localhost:8775/scan/%s/start'%taskID,data=json.dumps({'url':url},{'--os-shell'}),headers={'Content-Type':'application/json'})
+        r = requests.post('http://localhost:8775/scan/%s/start'%taskID,data=json.dumps({'url':url}),headers={'Content-Type':'application/json'})
         while(1):
             data = requests.get('http://localhost:8775/scan/%s/status'%taskID).json()
             print(data)
