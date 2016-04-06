@@ -5,8 +5,6 @@ import urllib.parse as urlparse
 import queue
 import sqlite3
 import sys
-webSiteSet = set()
-fuck_set = set()
 dic = {}
 http_dic = {}
 class attack_url():
@@ -25,13 +23,10 @@ def get_things(url):
             if has_flag: #有参数的链接
                 if(has_http):
                     my_format(i)
-#                    i = self.url+i #带参数的链接
                 else:
                     my_format(url+i)
-                    #print('带参数的链接'+self.url+i)
             if has_http:#有http->友情链接
                 http_format(i)
-                #self.friend_url.add(i)
             else:
                 #print('没用的url',i) #不带参数，无http关键词的链接
                 pass
@@ -44,7 +39,7 @@ def http_format(url):
     """用来格式化http链接的util类"""
     www_path = url[0:url.rfind('/')]
     if www_path not in http_dic:
-        http_dic[www_path] = url
+        http_dic[www_path] = url+'/'
     else:
         pass
      #   print('找到一个重复的url',url)
@@ -58,23 +53,26 @@ def my_format(url):
         for i in str:
             if i not in dic[Attack_url.www_path]:#应该取参数最多的那个
                 if len(str) > len(dic[Attack_url.www_path].params):
-                    dic[Attack_url.www_path].update = url
+                    dic[Attack_url.www_path].update = url+'/'
     else:
         dic[Attack_url.www_path] = url
 
 get_things('http://www.hnfnu.edu.cn')
 
 http_dic_clone = http_dic.copy()
-# for i in http_dic_clone:
-    # a = BigFuck(http_dic[i])
-    # a.get_things()
+for i in http_dic_clone:
+    get_things(http_dic[i])
 #for i in http_dic:
 #    print('友情链接：',http_dic[i])
 conn = sqlite3.connect('hello.db')
 conn.execute('create table  if not exists test(url text primary key, Scaned int)')
 for i in dic:
     if(dic[i].find('youku')==-1&dic[i].find('filename')==-1):
-        conn.execute('insert into test values(?,?)',(dic[i],0,))
+        try:
+            conn.execute('insert into test values(?,?)',(dic[i],0,))
+        except sqlite3.IntegrityError: # 已经存在 列
+            continue
+        
         #print(dic[i])
 conn.commit()
     
