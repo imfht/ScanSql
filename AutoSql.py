@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import sqlite3
 #这个类实现一个最简单的方法->给我一个url，我给你检测是否存在sql注入
 #想法是 -> 让每个服务器都保持扫描10个线程的状态,很好解决
 class ScanURL():
@@ -10,11 +11,13 @@ class ScanURL():
         self.timeout = timeout
         self.taskID = ''
 if __name__=='__main__':
+    conn = sqlite3.connect('hello.db')
     urlList = []
-    host = 'http://fiht.ml:8775'
-    for i in open('/home/fang/target1').readlines():
-        url = i.strip('\n')
+    host = 'http://nofiht.ml:8775'
+    for url in conn.execute('select url from test where scaned=0').fetchall():
+        url = url[0]
         if len(urlList)<5: #如果正在扫描的url数量小于10个，那么添加url 注：现更改为5个
+            print(url)
             a = ScanURL(url,0)
             data = requests.get(host+'/task/new').json()
             if data['success']:
@@ -46,6 +49,10 @@ if __name__=='__main__':
                     print('成功删除一个不怎么带劲的IP'+url)
                 else:
                     print(data)
+                    
+                    
+                    
+                    
         # if data['success']:
             # #r = requests.post(host+'/scan/%s/start'%taskID,data=json.dumps({'url':url},{'--'}),headers={'Content-Type':'application/json'})
             # while(1):
