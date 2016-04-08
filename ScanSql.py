@@ -15,6 +15,7 @@ class attack_url():
         return hash(self.www_path)
 def get_things(url):
     try:
+        print(url)
         req = requests.get(url,timeout=3)
         pattern = re.compile('href="(.*?)"')
         for i in re.findall(pattern,req.text):
@@ -57,7 +58,7 @@ def my_format(url):
     else:
         dic[Attack_url.www_path] = url
 
-get_things('http://www.hnfnu.edu.cn')
+get_things('http://tancheng.gov.cn')
 
 http_dic_clone = http_dic.copy()
 for i in http_dic_clone:
@@ -65,11 +66,11 @@ for i in http_dic_clone:
 #for i in http_dic:
 #    print('友情链接：',http_dic[i])
 conn = sqlite3.connect('hello.db')
-conn.execute('create table  if not exists test(url text primary key, Scaned int)')
+conn.execute('create table  if not exists test(url text primary key, Scaned int,Payload int)')
 for i in dic:
     if(dic[i].find('youku')==-1&dic[i].find('filename')==-1):
         try:
-            conn.execute('insert into test values(?,?)',(dic[i],0,))
+            conn.execute('insert into test values(?,?,?)',(dic[i],0,0,))
         except sqlite3.IntegrityError: # 已经存在 列
             continue
         

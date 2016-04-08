@@ -17,4 +17,15 @@ def Fuck_main(keyWord): # this is the fuck main
         for j in soup.findAll(class_='pr10 fz14'):#print(i.getText()) #打印名字
             print(Fuck_Href(j['href']),j.text)
         req = requests.get("http://search.top.chinaz.com/Search.aspx?p=%d&url="%i+str(keyWord))
-Fuck_main("p2p")
+def get_All():
+    for i in range(1,1680):
+        try:
+            req = requests.get('http://top.chinaz.com/hangye/index_%d.html'%i)
+            pattern = re.compile('<span class="col-gray">(.*?)</span>')
+            for i in re.findall(pattern,req.text):
+                print(i)
+        except Exception as e:
+            print(e)
+            continue
+#Fuck_main('山东')
+get_All()

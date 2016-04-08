@@ -37,19 +37,24 @@ if __name__=='__main__':
                     res = requests.get(host+'/scan/%s/data'%a.taskID).json()['data']
                     print(res)
                     if not res==[]: #data非空，存在sql注入
+                        conn.execute('update test set Scaned=1,Payload=1 where url=?',(url,))
                         print('经过sqlmap检查，这个url存在sql注入！'+'----'+url)
                         break
                     else:
+                        ########################貌似这个sql语句有点问题########33
+                        conn.execute('update test set Scaned=1,Payload=0 where url=?',(url,))
                         print('经过sqlmap检查，这个url不存在sql注入'+'-----'+url)
                         break
+                    conn.commit()
                     urlList.remove(i)
                 if i.timeout==3: #一次扫描 100s 两次 timeout=2 只给了一个url 100s的扫描时间 感觉有点不够 至少200s
                     urlList.remove(i)
+                    conn.execute('update test set Scaned=-1 where url=?',(url,))
+                    conn.commit()
                     requests.get(host+'/scan/%s/delete'%i.taskID)
                     print('成功删除一个不怎么带劲的IP'+url)
                 else:
                     print(data)
-                    
                     
                     
                     
