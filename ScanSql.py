@@ -7,6 +7,14 @@ import sqlite3
 import sys
 dic = {}
 http_dic = {}
+count = 0
+class http_url():
+    #----------------------------------------------------------------------
+    def init(self,url):
+        """"""
+        self.url = url
+        self.hasScaned = 0
+# 需要用到多线程的地方-->挨个请求网页的时候.用多线程能够显著提升效率        
 class attack_url():
     def __init__(self,www_path,param):
         self.www_path = www_path.lower()
@@ -14,14 +22,18 @@ class attack_url():
     def __hash__(self):
         return hash(self.www_path)
 def get_things(url):
+    first = 1
+    global count
+    count = count+1
     try:
-        print(url)
+        #print(url)
         req = requests.get(url,timeout=3)
         pattern = re.compile('href="(.*?)"')
         for i in re.findall(pattern,req.text):
             has_http = i.find('http')!=-1
             has_flag = i.find('=')!=-1
-            if has_flag: #有参数的链接
+            if has_flag and first: #有参数的链接
+                first = 1
                 if(has_http):
                     my_format(i)
                 else:
@@ -32,7 +44,7 @@ def get_things(url):
                 #print('没用的url',i) #不带参数，无http关键词的链接
                 pass
     except Exception as e:
-        print(e)
+        #print(e)
         pass
 
 def http_format(url):
@@ -58,23 +70,37 @@ def my_format(url):
     else:
         dic[Attack_url.www_path] = url
 
-get_things('http://tancheng.gov.cn')
-
-http_dic_clone = http_dic.copy()
-for i in http_dic_clone:
+get_things('http://www.sdu.edu.cn')
+count_1 = 0
+for i in http_dic.copy():
+    count_1 = count_1+1
+    if count_1 < count:
+        continue
     get_things(http_dic[i])
-#for i in http_dic:
-#    print('友情链接：',http_dic[i])
-conn = sqlite3.connect('hello.db')
-conn.execute('create table  if not exists test(url text primary key, Scaned int,Payload int)')
+print('需要扫描',len(http_dic)-count,'个IP')
+for i in http_dic.copy():
+    count_1 = count_1+1
+    if not count_1%10:
+        print(count_1)
+    if count_1 < count:
+        continue
+    get_things(http_dic[i])
+# for i in http_dic.copy():
+    # get_things(http_dic[i])
 for i in dic:
-    if(dic[i].find('youku')==-1&dic[i].find('filename')==-1):
-        try:
-            conn.execute('insert into test values(?,?,?)',(dic[i],0,0,))
-        except sqlite3.IntegrityError: # 已经存在 列
-            continue
-        
-        #print(dic[i])
-conn.commit()
+    if(dic[i].find('youku')==-1&dic[i].find('filename')==-1&dic[i].find('jsession')==-1):
+        print(dic[i])
+def write_database():
+    conn = sqlite3.connect('hello.db')
+    conn.execute('create table  if not exists test(url text primary key, Scaned int,Payload int)')
+    for i in dic:
+        if(dic[i].find('youku')==-1&dic[i].find('filename')==-1):
+            try:
+                conn.execute('insert into test values(?,?,?)',(dic[i],0,0,))
+            except sqlite3.IntegrityError: # 已经存在 列
+                continue
+            
+            #print(dic[i])
+    conn.commit()
     
 
