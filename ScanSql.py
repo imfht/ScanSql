@@ -26,8 +26,9 @@ def get_things(url):
     global count
     count = count+1
     try:
-        #print(url)
+        print(url)
         req = requests.get(url,timeout=3)
+        print(req.text)
         pattern = re.compile('href="(.*?)"')
         for i in re.findall(pattern,req.text):
             has_http = i.find('http')!=-1
@@ -99,7 +100,6 @@ def write_database():
                 conn.execute('insert into test values(?,?,?)',(dic[i],0,0,))
             except sqlite3.IntegrityError: # 已经存在 列
                 continue
-            
             #print(dic[i])
     conn.commit()
     
